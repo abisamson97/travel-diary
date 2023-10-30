@@ -4,5 +4,7 @@ const entriesCtrl = require('../controllers/entries');
 
 router.get('/new', entriesCtrl.new);
 
+router.get('/', entriesCtrl.index);
+
 module.exports = router;
 
