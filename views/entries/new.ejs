@@ -1,0 +1,22 @@
+<%- include('../partials/header') %>
+
+<h2>Enter a New Trip</h2>
+<form action="/entries" method="POST">
+  <label>Location:
+    <input type="text" name="location">
+  </label><br>
+  <label>Lodging:
+    <input type="text" name="lodging">
+  </label><br>
+  <label>Activities:
+    <input type="text" name="activities">
+  </label><br>
+  <label>Restaurants:
+    <input type="text" name="restaurants" >
+  </label><br>
+
+  <button type="submit">Add Trip</button>
+</form>
+<p><%= errorMsg %></p>
+
+<%- include('../partials/footer') %>
