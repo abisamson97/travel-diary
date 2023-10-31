@@ -7,17 +7,34 @@ a {
   color: #00B7FF;
 }
 
+h1 {
+  text-align: center;
+}
+
+#slogan {
+  text-align: center;
+}
+
 h2 {
   text-align: center;
 }
 
-.login {
+/* .login {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 34px;
-}
+} */
 
 .login img {
-  height: 30px;
+  height: 20px;
+}
+
+ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+li {
+  margin-bottom: 10px; 
 }

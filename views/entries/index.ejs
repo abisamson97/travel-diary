@@ -1,13 +1,13 @@
 <%- include('../partials/header') %>
 
-<h2>My Trips</h2>
+<h1>My Trips</h1>
+<ul> 
     <p>Locations:</p>
-  <tbody>
     <% entries.forEach(function(e) { %>
-      <tr>
-        <td><a href="/entries/<%= e._id %>"> <%= e.location %></a></td>
-      </tr>
+      <li> 
+        <a href="/entries/<%= e._id %>"><%= e.location %></a>
+      </li>
     <% }); %>
-  </tbody>
+</ul> 
 
 <%- include('../partials/footer') %>
