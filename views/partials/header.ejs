@@ -9,11 +9,17 @@
   </head>
   <body>
     <nav>
-      <a href="/">Home</a>
+      <a href="/" <%- title === 'Home' ? 'class="active"' : '' %>>Home</a>
       |
-      <a href="/entries">My Trips</a>
-      |
-      <a href="/entries/new">Add an Entry</a>
-      |
-      <a href="/">My Profile</a>
+      <% if (user) { %>
+        <a href="/entries" <%- title === 'My Trips' ? 'class="active"' : '' %>>My Trips</a>
+        |
+        <a href="/entries/new" <%- title === 'Add an Entry' ? 'class="active"' : '' %>>Add an Entry</a>
+        |
+        <a href="/" <%- title === 'My Profile' ? 'class="active"' : '' %>>My Profile</a>
+        |
+        <a href="/logout">LOG OUT</a>
+    <% } else { %>
+        <a href="/auth/google" class="login">LOG IN&nbsp;<img src="https://i.imgur.com/FHjYyi0.png"></a>
+    <% } %>
     </nav>
