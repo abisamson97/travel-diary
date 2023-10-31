@@ -5,11 +5,9 @@
   <tbody>
     <% entries.forEach(function(e) { %>
       <tr>
-        <!-- <td><%= e.location %></td> -->
         <td><a href="/entries/<%= e._id %>"> <%= e.location %></a></td>
       </tr>
     <% }); %>
   </tbody>
-</table>
 
 <%- include('../partials/footer') %>
