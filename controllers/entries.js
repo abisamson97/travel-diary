@@ -18,7 +18,7 @@ async function create(req, res) {
     
 async function index(req, res) {
     const entries = await Entry.find({});
-    res.render('entries/index', { entries });
+    res.render('entries/index', { title: 'My Trips', entries });
   }
 
 function newEntry(req, res) {

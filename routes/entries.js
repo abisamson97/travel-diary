@@ -4,7 +4,7 @@ const entriesCtrl = require('../controllers/entries');
 
 router.get('/new', entriesCtrl.new);
 
-router.get('/', moviesCtrl.create);
+router.post('/', entriesCtrl.create);
 
 router.get('/', entriesCtrl.index);
 

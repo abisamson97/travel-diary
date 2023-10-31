@@ -1,15 +1,15 @@
 <%- include('../partials/header') %>
 
 <h2>My Trips</h2>
-    <p>Location:</p>
+    <p>Locations:</p>
   <tbody>
     <% entries.forEach(function(e) { %>
       <tr>
         <td><%= e.location %></td>
-        <td><a href="/entries/<%= e._id %>">DETAILS</a></td>
+        <td><a href="/entries/<%= e._id %>"> TRIP DETAILS</a></td>
       </tr>
     <% }); %>
   </tbody>
 </table>
 
-<%- include('../partials/header') %>
+<%- include('../partials/footer') %>

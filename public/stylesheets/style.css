@@ -7,6 +7,10 @@ a {
   color: #00B7FF;
 }
 
+h2 {
+  text-align: center;
+}
+
 .login {
   display: flex;
   justify-content: center;
