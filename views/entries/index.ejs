@@ -5,8 +5,8 @@
   <tbody>
     <% entries.forEach(function(e) { %>
       <tr>
-        <td><%= e.location %></td>
-        <td><a href="/entries/<%= e._id %>"> TRIP DETAILS</a></td>
+        <!-- <td><%= e.location %></td> -->
+        <td><a href="/entries/<%= e._id %>"> <%= e.location %></a></td>
       </tr>
     <% }); %>
   </tbody>
