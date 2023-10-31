@@ -11,4 +11,8 @@ const entrySchema = new Schema({
     timestamps: true
 });
 
+const commentSchema = new Schema({
+    content: {type: String, required: true}
+})
+
 module.exports = mongoose.model('Entry', entrySchema);
