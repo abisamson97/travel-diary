@@ -5,7 +5,8 @@ module.exports = {
     index,
     create, 
     show,
-    update
+    update,
+    edit
 }
 
 function update(req, res) {
@@ -20,6 +21,13 @@ function update(req, res) {
       res.redirect(`/entries/${entry._id}`);
     }
   );
+}
+
+function edit(req, res) {
+  Entry.findOne({_id: req.params.id, userRecommending: req.user._id}, function(err, entry) {
+    if (err || !entry) return res.redirect('/entries');
+    res.render('entries/edit', {entry});
+  });
 }
 
 async function create(req, res) {

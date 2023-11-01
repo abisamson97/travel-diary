@@ -10,6 +10,8 @@ router.get('/:id', entriesCtrl.show);
 
 router.post('/', entriesCtrl.create);
 
+router.get('/:id/edit', entriesCtrl.edit);
+
 router.put('/:id', entriesCtrl.update);
 
 
