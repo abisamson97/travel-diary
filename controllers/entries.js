@@ -8,6 +8,20 @@ module.exports = {
     update,
     edit
 }
+async function edit(req, res) {
+  try {
+    const entry = await Entry.findById(req.params.id).exec();
+    
+    if (!entry) {
+      return res.redirect('/entries');
+    }
+
+    res.render('entries/edit', { title: 'Update Trip', entry });
+  } catch (err) {
+    console.error(err);
+    res.redirect('/entries');
+  }
+}
 
 function update(req, res) {
   Entry.findOneAndUpdate(
@@ -21,13 +35,6 @@ function update(req, res) {
       res.redirect(`/entries/${entry._id}`);
     }
   );
-}
-
-function edit(req, res) {
-  Entry.findOne({_id: req.params.id, userRecommending: req.user._id}, function(err, entry) {
-    if (err || !entry) return res.redirect('/entries');
-    res.render('entries/edit', {entry});
-  });
 }
 
 async function create(req, res) {
