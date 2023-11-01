@@ -26,421 +26,550 @@
   26: var indexRouter = require('./routes/index');
   27: var usersRouter = require('./routes/users');
   28: var entriesRouter = require('./routes/entries');
-  29: 
-  30: var app = express();
-  31: 
-  32: // view engine setup
-  33: app.set('views', path.join(__dirname, 'views'));
-  34: app.set('view engine', 'ejs');
-  35: 
-  36: app.use(logger('dev'));
-  37: app.use(express.json());
-  38: app.use(express.urlencoded({ extended: false }));
-  39: app.use(cookieParser());
-  40: app.use(express.static(path.join(__dirname, 'public')));
-  41: 
-  42: app.use(session({
-  43:   secret: process.env.SECRET,
-  44:   resave: false,
-  45:   saveUninitialized: true
-  46: }));
-  47: 
-  48: app.use(passport.initialize());
-  49: app.use(passport.session());
-  50: 
-  51: app.use(function (req, res, next) {
-  52:   res.locals.user = req.user;
-  53:   next();
-  54: });
-  55: 
-  56: app.use(methodOverride('_method')); 
-  57: app.use('/', indexRouter);
-  58: app.use('/users', usersRouter);
-  59: app.use('/entries', entriesRouter);
-  60: 
-  61: // catch 404 and forward to error handler
-  62: app.use(function(req, res, next) {
-  63:   next(createError(404));
-  64: });
-  65: 
-  66: // error handler
-  67: app.use(function(err, req, res, next) {
-  68:   // set locals, only providing error in development
-  69:   res.locals.message = err.message;
-  70:   res.locals.error = req.app.get('env') === 'development' ? err : {};
-  71: 
-  72:   // render the error page
-  73:   res.status(err.status || 500);
-  74:   res.render('error');
-  75: });
-  76: 
-  77: module.exports = app;
+  29: var commentsRouter = require('./routes/comments');
+  30: 
+  31: var app = express();
+  32: 
+  33: // view engine setup
+  34: app.set('views', path.join(__dirname, 'views'));
+  35: app.set('view engine', 'ejs');
+  36: 
+  37: app.use(logger('dev'));
+  38: app.use(express.json());
+  39: app.use(express.urlencoded({ extended: false }));
+  40: app.use(cookieParser());
+  41: app.use(express.static(path.join(__dirname, 'public')));
+  42: 
+  43: app.use(session({
+  44:   secret: process.env.SECRET,
+  45:   resave: false,
+  46:   saveUninitialized: true
+  47: }));
+  48: 
+  49: app.use(passport.initialize());
+  50: app.use(passport.session());
+  51: 
+  52: app.use(function (req, res, next) {
+  53:   res.locals.user = req.user;
+  54:   next();
+  55: });
+  56: 
+  57: app.use(methodOverride('_method')); 
+  58: app.use('/', indexRouter);
+  59: app.use('/users', usersRouter);
+  60: app.use('/entries', entriesRouter);
+  61: app.use('/', commentsRouter);
+  62: 
+  63: // catch 404 and forward to error handler
+  64: app.use(function(req, res, next) {
+  65:   next(createError(404));
+  66: });
+  67: 
+  68: // error handler
+  69: app.use(function(err, req, res, next) {
+  70:   // set locals, only providing error in development
+  71:   res.locals.message = err.message;
+  72:   res.locals.error = req.app.get('env') === 'development' ? err : {};
+  73: 
+  74:   // render the error page
+  75:   res.status(err.status || 500);
+  76:   res.render('error');
+  77: });
   78: 
-79: bin
-80: bin/www
-  81: #!/usr/bin/env node
-  82: 
-  83: /**
-  84:  * Module dependencies.
-  85:  */
-  86: 
-  87: var app = require('../app');
-  88: var debug = require('debug')('travel-diary:server');
-  89: var http = require('http');
-  90: 
-  91: /**
-  92:  * Get port from environment and store in Express.
-  93:  */
-  94: 
-  95: var port = normalizePort(process.env.PORT || '3000');
-  96: app.set('port', port);
-  97: 
-  98: /**
-  99:  * Create HTTP server.
-  100:  */
-  101: 
-  102: var server = http.createServer(app);
+  79: module.exports = app;
+  80: 
+81: bin
+82: bin/www
+  83: #!/usr/bin/env node
+  84: 
+  85: /**
+  86:  * Module dependencies.
+  87:  */
+  88: 
+  89: var app = require('../app');
+  90: var debug = require('debug')('travel-diary:server');
+  91: var http = require('http');
+  92: 
+  93: /**
+  94:  * Get port from environment and store in Express.
+  95:  */
+  96: 
+  97: var port = normalizePort(process.env.PORT || '3000');
+  98: app.set('port', port);
+  99: 
+  100: /**
+  101:  * Create HTTP server.
+  102:  */
   103: 
-  104: /**
-  105:  * Listen on provided port, on all network interfaces.
-  106:  */
-  107: 
-  108: server.listen(port);
-  109: server.on('error', onError);
-  110: server.on('listening', onListening);
-  111: 
-  112: /**
-  113:  * Normalize a port into a number, string, or false.
-  114:  */
-  115: 
-  116: function normalizePort(val) {
-  117:   var port = parseInt(val, 10);
-  118: 
-  119:   if (isNaN(port)) {
-  120:     // named pipe
-  121:     return val;
-  122:   }
-  123: 
-  124:   if (port >= 0) {
-  125:     // port number
-  126:     return port;
-  127:   }
-  128: 
-  129:   return false;
-  130: }
-  131: 
-  132: /**
-  133:  * Event listener for HTTP server "error" event.
-  134:  */
-  135: 
-  136: function onError(error) {
-  137:   if (error.syscall !== 'listen') {
-  138:     throw error;
-  139:   }
-  140: 
-  141:   var bind = typeof port === 'string'
-  142:     ? 'Pipe ' + port
-  143:     : 'Port ' + port;
-  144: 
-  145:   // handle specific listen errors with friendly messages
-  146:   switch (error.code) {
-  147:     case 'EACCES':
-  148:       console.error(bind + ' requires elevated privileges');
-  149:       process.exit(1);
-  150:       break;
-  151:     case 'EADDRINUSE':
-  152:       console.error(bind + ' is already in use');
-  153:       process.exit(1);
-  154:       break;
-  155:     default:
-  156:       throw error;
-  157:   }
-  158: }
-  159: 
-  160: /**
-  161:  * Event listener for HTTP server "listening" event.
-  162:  */
-  163: 
-  164: function onListening() {
-  165:   var addr = server.address();
-  166:   var bind = typeof addr === 'string'
-  167:     ? 'pipe ' + addr
-  168:     : 'port ' + addr.port;
-  169:   debug('Listening on ' + bind);
-  170: }
-  171: 
-172: config
-173: config/database.js
-  174: const mongoose = require('mongoose');
-  175: 
-  176: mongoose.connect(process.env.DATABASE_URL);
+  104: var server = http.createServer(app);
+  105: 
+  106: /**
+  107:  * Listen on provided port, on all network interfaces.
+  108:  */
+  109: 
+  110: server.listen(port);
+  111: server.on('error', onError);
+  112: server.on('listening', onListening);
+  113: 
+  114: /**
+  115:  * Normalize a port into a number, string, or false.
+  116:  */
+  117: 
+  118: function normalizePort(val) {
+  119:   var port = parseInt(val, 10);
+  120: 
+  121:   if (isNaN(port)) {
+  122:     // named pipe
+  123:     return val;
+  124:   }
+  125: 
+  126:   if (port >= 0) {
+  127:     // port number
+  128:     return port;
+  129:   }
+  130: 
+  131:   return false;
+  132: }
+  133: 
+  134: /**
+  135:  * Event listener for HTTP server "error" event.
+  136:  */
+  137: 
+  138: function onError(error) {
+  139:   if (error.syscall !== 'listen') {
+  140:     throw error;
+  141:   }
+  142: 
+  143:   var bind = typeof port === 'string'
+  144:     ? 'Pipe ' + port
+  145:     : 'Port ' + port;
+  146: 
+  147:   // handle specific listen errors with friendly messages
+  148:   switch (error.code) {
+  149:     case 'EACCES':
+  150:       console.error(bind + ' requires elevated privileges');
+  151:       process.exit(1);
+  152:       break;
+  153:     case 'EADDRINUSE':
+  154:       console.error(bind + ' is already in use');
+  155:       process.exit(1);
+  156:       break;
+  157:     default:
+  158:       throw error;
+  159:   }
+  160: }
+  161: 
+  162: /**
+  163:  * Event listener for HTTP server "listening" event.
+  164:  */
+  165: 
+  166: function onListening() {
+  167:   var addr = server.address();
+  168:   var bind = typeof addr === 'string'
+  169:     ? 'pipe ' + addr
+  170:     : 'port ' + addr.port;
+  171:   debug('Listening on ' + bind);
+  172: }
+  173: 
+174: config
+175: config/database.js
+  176: const mongoose = require('mongoose');
   177: 
-  178: const db = mongoose.connection;
-  179: 	
-  180: db.on('connected', function() {
-  181:   console.log(`Connected to MongoDB ${db.name} at ${db.host}:${db.port}`);
-  182: });
-183: config/passport.js
-  184: const passport = require('passport');
-  185: const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-  186: const User = require('../models/user');
-  187: 
-  188: passport.use(new GoogleStrategy(
-  189:     {
-  190:       clientID: process.env.GOOGLE_CLIENT_ID,
-  191:       clientSecret: process.env.GOOGLE_SECRET,
-  192:       callbackURL: process.env.GOOGLE_CALLBACK
-  193:     },
-  194:     async function(accessToken, refreshToken, profile, cb) {
-  195:         try {
-  196:             let user = await User.findOne({ googleId: profile.id });
-  197:             if (user) return cb(null, user);
-  198:             user = await User.create({
-  199:               name: profile.displayName,
-  200:               googleId: profile.id,
-  201:               email: profile.emails[0].value,
-  202:               avatar: profile.photos[0].value
-  203:             });
-  204:             return cb(null, user);
-  205:           } catch (err) {
-  206:             return cb(err);
-  207:           }
-  208:     }
-  209:   ));
-  210: 
-  211:   passport.serializeUser(function(user, cb) {
-  212:     cb(null, user._id);
-  213:   });
-  214: 
-  215:   passport.deserializeUser(async function(userId, cb) {
-  216:     cb(null, await User.findById(userId));
-  217:   });
-218: controllers
-219: controllers/entries.js
-  220: const Entry = require('../models/entry');
-  221: 
-  222: module.exports = {
-  223:     new: newEntry,
-  224:     index,
+  178: mongoose.connect(process.env.DATABASE_URL);
+  179: 
+  180: const db = mongoose.connection;
+  181: 	
+  182: db.on('connected', function() {
+  183:   console.log(`Connected to MongoDB ${db.name} at ${db.host}:${db.port}`);
+  184: });
+185: config/passport.js
+  186: const passport = require('passport');
+  187: const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+  188: const User = require('../models/user');
+  189: 
+  190: passport.use(new GoogleStrategy(
+  191:     {
+  192:       clientID: process.env.GOOGLE_CLIENT_ID,
+  193:       clientSecret: process.env.GOOGLE_SECRET,
+  194:       callbackURL: process.env.GOOGLE_CALLBACK
+  195:     },
+  196:     async function(accessToken, refreshToken, profile, cb) {
+  197:         try {
+  198:             let user = await User.findOne({ googleId: profile.id });
+  199:             if (user) return cb(null, user);
+  200:             user = await User.create({
+  201:               name: profile.displayName,
+  202:               googleId: profile.id,
+  203:               email: profile.emails[0].value,
+  204:               avatar: profile.photos[0].value
+  205:             });
+  206:             return cb(null, user);
+  207:           } catch (err) {
+  208:             return cb(err);
+  209:           }
+  210:     }
+  211:   ));
+  212: 
+  213:   passport.serializeUser(function(user, cb) {
+  214:     cb(null, user._id);
+  215:   });
+  216: 
+  217:   passport.deserializeUser(async function(userId, cb) {
+  218:     cb(null, await User.findById(userId));
+  219:   });
+220: controllers
+221: controllers/comments.js
+  222: const Entry = require('../models/entry');
+  223: 
+  224: module.exports = {
   225:     create
   226: }
   227: 
   228: async function create(req, res) {
-  229:     try {
-  230:         await Entry.create(req.body);
-  231:         res.redirect('/entries/new');
-  232:       } catch (err) {
-  233:         console.log(err);
-  234:         res.render('entries/new', { errorMsg: err.message });
-  235:       }
-  236:     }
-  237:     
-  238: async function index(req, res) {
-  239:     const entries = await Entry.find({});
-  240:     res.render('/', { entries });
-  241:   }
-  242: 
-  243: function newEntry(req, res) {
-  244:     res.render('entries/new', { title: 'Add Trip', errorMsg: ''});
-  245: }
-  246: 
-247: models
-248: models/entry.js
-  249: const mongoose = require('mongoose');
-  250: 
-  251: const Schema = mongoose.Schema;
-  252: 
-  253: const entrySchema = new Schema({
-  254:     location: {type: String, required: true},
-  255:     lodging: {type: String},
-  256:     activities: {type: String},
-  257:     restaurants: {type: String}
-  258: }, {
-  259:     timestamps: true
-  260: });
-  261: 
-  262: module.exports = mongoose.model('Entry', entrySchema);
-263: models/user.js
-  264: const mongoose = require('mongoose');
-  265: const Schema = mongoose.Schema;
-  266: 
-  267: const userSchema = new Schema({
-  268:   name: String,
-  269:   googleId: {
-  270:     type: String,
-  271:     required: true
-  272:   },
-  273:   email: String,
-  274:   avatar: String
-  275: }, {
-  276:   timestamps: true
-  277: });
+  229:     const entry = await Entry.findById(req.params.id);
+  230: 
+  231:     req.body.user = req.user._id;
+  232:     req.body.userName = req.user.name;
+  233:     req.body.userAvatar = req.user.avatar;
+  234:     
+  235:     entry.comments.push(req.body);
+  236:     try {
+  237:         await entry.save();
+  238:       } catch (err) {
+  239:         console.log(err);
+  240:       }
+  241:       res.redirect(`/entries/${entry._id}`);
+  242:     }
+  243: 
+  244: 
+245: controllers/entries.js
+  246: const Entry = require('../models/entry');
+  247: 
+  248: module.exports = {
+  249:     new: newEntry,
+  250:     index,
+  251:     create, 
+  252:     show
+  253: }
+  254: 
+  255: async function create(req, res) {
+  256:     try {
+  257:         await Entry.create(req.body);
+  258:         res.redirect('/entries/new');
+  259:       } catch (err) {
+  260:         console.log(err);
+  261:         res.render('entries/new', { errorMsg: err.message });
+  262:       }
+  263:     }
+  264:     
+  265: async function index(req, res) {
+  266:     const entries = await Entry.find({});
+  267:     res.render('entries/index', { title: 'My Trips', entries });
+  268:   }
+  269: 
+  270:   async function show(req, res) {
+  271:     const entry = await Entry.findById(req.params.id);
+  272:     res.render('entries/show', { title: 'Trip Details', entry})
+  273: }
+  274: 
+  275: function newEntry(req, res) {
+  276:     res.render('entries/new', { title: 'Add Trip', errorMsg: ''});
+  277: }
   278: 
-  279: module.exports = mongoose.model('User', userSchema);
-280: public
-281: public/images
-282: public/javascripts
-283: public/stylesheets
-284: public/stylesheets/style.css
-  285: body {
-  286:   padding: 50px;
-  287:   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  288: }
-  289: 
-  290: a {
-  291:   color: #00B7FF;
-  292: }
-  293: 
-  294: .login {
-  295:   display: flex;
-  296:   justify-content: center;
-  297:   align-items: center;
-  298:   height: 34px;
-  299: }
-  300: 
-  301: .login img {
-  302:   height: 30px;
-  303: }
-304: routes
-305: routes/entries.js
-  306: const express = require('express');
-  307: const router = express.Router();
-  308: const entriesCtrl = require('../controllers/entries');
+279: models
+280: models/entry.js
+  281: const mongoose = require('mongoose');
+  282: 
+  283: const Schema = mongoose.Schema;
+  284: 
+  285: const commentSchema = new Schema({
+  286:     content: {type: String, required: true},
+  287:     user: {
+  288:         type: Schema.Types.ObjectId,
+  289:         ref: 'User',
+  290:         required: true
+  291:       },
+  292:       userName: String,
+  293:       userAvatar: String
+  294: }, {
+  295:     timestamps: true
+  296: })
+  297: 
+  298: const entrySchema = new Schema({
+  299:     location: {type: String, required: true},
+  300:     lodging: {type: String},
+  301:     activities: {type: String},
+  302:     restaurants: {type: String},
+  303:     comments: [commentSchema],
+  304: }, {
+  305:     timestamps: true
+  306: });
+  307: 
+  308: 
   309: 
-  310: router.get('/new', entriesCtrl.new);
-  311: 
-  312: router.get('/', entriesCtrl.create);
-  313: 
-  314: router.get('/', entriesCtrl.index);
-  315: 
-  316: module.exports = router;
-  317: 
-  318: 
-319: routes/index.js
-  320: var express = require('express');
-  321: var router = express.Router();
-  322: const passport = require('passport');
-  323: 
-  324: /* GET home page. */
-  325: router.get('/', function(req, res, next) {
-  326:   res.render('index', { title: 'Travel Diary' });
-  327: });
-  328: 
-  329: router.get('/auth/google', passport.authenticate(
-  330:   'google',
-  331:   {
-  332:     scope: ['profile', 'email'],
-  333:   }
-  334: ));
-  335: 
-  336: router.get('/oauth2callback', passport.authenticate(
-  337:   'google',
-  338:   {
-  339:     successRedirect: '/',
-  340:     failureRedirect: '/'
-  341:   }
-  342: ));
-  343: 
-  344: router.get('/logout', function(req, res){
-  345:   req.logout(function() {
-  346:     res.redirect('/');
-  347:   });
-  348: });
-  349: module.exports = router;
-  350: 
-351: routes/users.js
-  352: var express = require('express');
-  353: var router = express.Router();
-  354: 
-  355: 
-  356: // /* GET users listing. */
-  357: router.get('/', function(req, res, next) {
-  358:   res.send('respond with a resource');
-  359: });
+  310: module.exports = mongoose.model('Entry', entrySchema);
+311: models/user.js
+  312: const mongoose = require('mongoose');
+  313: const Schema = mongoose.Schema;
+  314: 
+  315: const userSchema = new Schema({
+  316:   name: String,
+  317:   googleId: {
+  318:     type: String,
+  319:     required: true
+  320:   },
+  321:   email: String,
+  322:   avatar: String
+  323: }, {
+  324:   timestamps: true
+  325: });
+  326: 
+  327: module.exports = mongoose.model('User', userSchema);
+328: public
+329: public/images
+330: public/javascripts
+331: public/stylesheets
+332: public/stylesheets/style.css
+  333: body {
+  334:   padding: 50px;
+  335:   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  336: }
+  337: 
+  338: a {
+  339:   color: #00B7FF;
+  340: }
+  341: 
+  342: h1 {
+  343:   text-align: center;
+  344: }
+  345: 
+  346: #slogan {
+  347:   text-align: center;
+  348: }
+  349: 
+  350: h2 {
+  351:   text-align: center;
+  352: }
+  353: 
+  354: /* .login {
+  355:   display: flex;
+  356:   justify-content: center;
+  357:   align-items: center;
+  358:   height: 34px;
+  359: } */
   360: 
-  361: module.exports = router;
-  362: 
-363: views
-364: views/entries
-365: views/entries/index.ejs
-  366: <%- include('../partials/header') %>
-  367: 
-  368: <h2>My Trips</h2>
-  369:     <p>Location:</p>
-  370:   <tbody>
-  371:     <% entries.forEach(function(e) { %>
-  372:       <tr>
-  373:         <td><%= e.location %></td>
-  374:         <td><a href="/entries/<%= e._id %>">DETAILS</a></td>
-  375:       </tr>
-  376:     <% }); %>
-  377:   </tbody>
-  378: </table>
-  379: 
-  380: <%- include('../partials/header') %>
-381: views/entries/new.ejs
-  382: <%- include('../partials/header') %>
-  383: 
-  384: <h2>Enter a New Trip</h2>
-  385: <form action="/entries" method="POST">
-  386:   <label>Location:
-  387:     <input type="text" name="location">
-  388:   </label><br>
-  389:   <label>Lodging:
-  390:     <input type="text" name="lodging">
-  391:   </label><br>
-  392:   <label>Activities:
-  393:     <input type="text" name="activities">
-  394:   </label><br>
-  395:   <label>Restaurants:
-  396:     <input type="text" name="restaurants" >
-  397:   </label><br>
+  361: .login img {
+  362:   height: 20px;
+  363: }
+  364: 
+  365: ul {
+  366:   list-style-type: disc;
+  367:   padding-left: 20px;
+  368: }
+  369: 
+  370: li {
+  371:   margin-bottom: 10px; 
+  372: }
+  373: 
+  374: 
+375: routes
+376: routes/comments.js
+  377: const express = require('express');
+  378: const router = express.Router();
+  379: const commentsCtrl = require('../controllers/comments');
+  380: 
+  381: router.post('/entries/:id/comments', commentsCtrl.create);
+  382: 
+  383: module.exports = router;
+384: routes/entries.js
+  385: const express = require('express');
+  386: const router = express.Router();
+  387: const entriesCtrl = require('../controllers/entries');
+  388: 
+  389: router.get('/', entriesCtrl.index);
+  390: 
+  391: router.get('/new', entriesCtrl.new);
+  392: 
+  393: router.get('/:id', entriesCtrl.show);
+  394: 
+  395: router.post('/', entriesCtrl.create);
+  396: 
+  397: 
   398: 
-  399:   <button type="submit">Add Trip</button>
-  400: </form>
-  401: <p><%= errorMsg %></p>
-  402: 
-  403: <%- include('../partials/footer') %>
-404: views/error.ejs
-  405: <h1><%= message %></h1>
-  406: <h2><%= error.status %></h2>
-  407: <pre><%= error.stack %></pre>
-  408: 
-409: views/index.ejs
-  410: <%- include('./partials/header') %>
+  399: module.exports = router;
+  400: 
+  401: 
+402: routes/index.js
+  403: var express = require('express');
+  404: var router = express.Router();
+  405: const passport = require('passport');
+  406: 
+  407: /* GET home page. */
+  408: router.get('/', function(req, res, next) {
+  409:   res.render('index', { title: 'Travel Diary' });
+  410: });
   411: 
-  412:     <h1><%= title %></h1>
-  413: 
-  414: <%- include('./partials/footer') %>
-  415:  
-  416: 
-417: views/partials
-418: views/partials/footer.ejs
-  419: </body>
-  420: </html>
-421: views/partials/header.ejs
-  422: <!DOCTYPE html>
-  423: <html>
-  424:   <head>
-  425:     <meta charset="UTF-8">
-  426:     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  427:     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  428:     <title><%= title %></title>
-  429:     <link rel='stylesheet' href='/stylesheets/style.css' />
-  430:   </head>
-  431:   <body>
-  432:     <nav>
-  433:       <a href="/" <%- title === 'Home' ? 'class="active"' : '' %>>Home</a>
-  434:       |
-  435:       <% if (user) { %>
-  436:         <a href="/entries" <%- title === 'My Trips' ? 'class="active"' : '' %>>My Trips</a>
-  437:         |
-  438:         <a href="/entries/new" <%- title === 'Add an Entry' ? 'class="active"' : '' %>>Add an Entry</a>
-  439:         |
-  440:         <a href="/" <%- title === 'My Profile' ? 'class="active"' : '' %>>My Profile</a>
-  441:         |
-  442:         <a href="/logout">LOG OUT</a>
-  443:     <% } else { %>
-  444:         <a href="/auth/google" class="login">LOG IN&nbsp;<img src="https://i.imgur.com/FHjYyi0.png"></a>
-  445:     <% } %>
-  446:     </nav>
+  412: router.get('/auth/google', passport.authenticate(
+  413:   'google',
+  414:   {
+  415:     scope: ['profile', 'email'],
+  416:   }
+  417: ));
+  418: 
+  419: router.get('/oauth2callback', passport.authenticate(
+  420:   'google',
+  421:   {
+  422:     successRedirect: '/',
+  423:     failureRedirect: '/'
+  424:   }
+  425: ));
+  426: 
+  427: router.get('/logout', function(req, res){
+  428:   req.logout(function() {
+  429:     res.redirect('/');
+  430:   });
+  431: });
+  432: module.exports = router;
+  433: 
+434: routes/users.js
+  435: var express = require('express');
+  436: var router = express.Router();
+  437: 
+  438: 
+  439: // /* GET users listing. */
+  440: router.get('/', function(req, res, next) {
+  441:   res.send('respond with a resource');
+  442: });
+  443: 
+  444: module.exports = router;
+  445: 
+446: views
+447: views/entries
+448: views/entries/index.ejs
+  449: <%- include('../partials/header') %>
+  450: 
+  451: <h1>My Trips</h1>
+  452: <ul> 
+  453:     <p>Locations:</p>
+  454:     <% entries.forEach(function(e) { %>
+  455:       <li> 
+  456:         <a href="/entries/<%= e._id %>"><%= e.location %></a>
+  457:       </li>
+  458:     <% }); %>
+  459: </ul> 
+  460: 
+  461: <%- include('../partials/footer') %>
+462: views/entries/new.ejs
+  463: <%- include('../partials/header') %>
+  464: 
+  465: <h2>Enter a New Trip</h2>
+  466: <form action="/entries" method="POST">
+  467:   <label>Location:
+  468:     <input type="text" name="location">
+  469:   </label><br>
+  470:   <label>Lodging:
+  471:     <input type="text" name="lodging">
+  472:   </label><br>
+  473:   <label>Activities:
+  474:     <input type="text" name="activities">
+  475:   </label><br>
+  476:   <label>Restaurants:
+  477:     <input type="text" name="restaurants" >
+  478:   </label><br>
+  479: 
+  480:   <button type="submit">Add Trip</button>
+  481: </form>
+  482: <p><%= errorMsg %></p>
+  483: 
+  484: <%- include('../partials/footer') %>
+485: views/entries/show.ejs
+  486: <%- include('../partials/header') %>
+  487: 
+  488: <h2><%= entry.location %></h2>
+  489: 
+  490: <section id="show-page">
+  491:     <div>Lodging: </div>
+  492:     <div><%= entry.lodging %></div>
+  493:     <div>Activities: </div>
+  494:     <div><%= entry.activities %></div>
+  495:     <div>Restaurants: </div>
+  496:     <div><%= entry.restaurants %></div>
+  497: 
+  498: <br><br><h2>Comments</h2>
+  499: <form id="add-comment-form" method="POST"
+  500:     action="/entries/<%= entry._id %>/comments">
+  501:     <label>Write a Comment:</label>
+  502:     <textarea name="content"></textarea>
+  503:     <input type="submit" value="Post">
+  504: </form>
+  505: 
+  506: <% if (entry.comments.length) { %>
+  507:     <table>
+  508:       <thead>
+  509:         <tr>
+  510:         <th>User</th>
+  511:           <th>Comment</th>
+  512:           <th>Date</th>
+  513:         </tr>
+  514:       </thead>
+  515:       <tbody>
+  516:         <% let total = 0 %>
+  517:         <% entry.comments.forEach(function(c) { %>
+  518:             <% total += c.comment %>
+  519:           <tr>
+  520:             <td class="comment-user"><img alt="avatar" src="<%= c.userAvatar %>" referrerpolicy="no-referrer" ><%= c.userName %></td>
+  521:             <td><%= c.content %></td>
+  522:             <td><%= c.createdAt.toLocaleDateString() %></td>
+  523:           </tr>
+  524:         <% }); %>
+  525:       </tbody>
+  526:     </table>
+  527:   <% } else { %>
+  528:     <h5>No Comments Yet</h5>
+  529:   <% } %>
+  530: 
+  531: <%- include('../partials/footer') %>
+532: views/error.ejs
+  533: <h1><%= message %></h1>
+  534: <h2><%= error.status %></h2>
+  535: <pre><%= error.stack %></pre>
+  536: 
+537: views/index.ejs
+  538: <%- include('./partials/header') %>
+  539: 
+  540:     <h1><%= title %></h1>
+  541:     <p id="slogan">Discover, Document, Display - One Adventure at a Time</p>
+  542: 
+  543: <%- include('./partials/footer') %>
+  544:  
+  545: 
+546: views/partials
+547: views/partials/footer.ejs
+  548: </body>
+  549: </html>
+550: views/partials/header.ejs
+  551: <!DOCTYPE html>
+  552: <html>
+  553:   <head>
+  554:     <meta charset="UTF-8">
+  555:     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  556:     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  557:     <title><%= title %></title>
+  558:     <link rel='stylesheet' href='/stylesheets/style.css' />
+  559:   </head>
+  560:   <body>
+  561:     <nav>
+  562:       <a href="/" <%- title === 'Home' ? 'class="active"' : '' %>>Home</a>
+  563:       |
+  564:       <% if (user) { %>
+  565:         <a href="/entries" <%- title === 'My Trips' ? 'class="active"' : '' %>>My Trips</a>
+  566:         |
+  567:         <a href="/entries/new" <%- title === 'Add an Entry' ? 'class="active"' : '' %>>Add an Entry</a>
+  568:         |
+  569:         <a href="/" <%- title === 'My Profile' ? 'class="active"' : '' %>>My Profile</a>
+  570:         |
+  571:         <a href="/logout">LOG OUT</a>
+  572:     <% } else { %>
+  573:         <a href="/auth/google" class="login">LOG IN&nbsp;<img src="https://i.imgur.com/FHjYyi0.png"></a>
+  574:     <% } %>
+  575:     </nav>

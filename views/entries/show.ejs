@@ -22,15 +22,19 @@
     <table>
       <thead>
         <tr>
-          <th>Date</th>
+        <th>User</th>
           <th>Comment</th>
+          <th>Date</th>
         </tr>
       </thead>
       <tbody>
+
         <% entry.comments.forEach(function(c) { %>
+
           <tr>
-            <td><%= c.createdAt.toLocaleDateString() %></td>
+            <td class="comment-user"><img alt="avatar" src="<%= c.userAvatar %>" referrerpolicy="no-referrer" ><%= c.userName %></td>
             <td><%= c.content %></td>
+            <!-- <td><%= c.createdAt.toLocaleDateString() %></td> -->
           </tr>
         <% }); %>
       </tbody>
