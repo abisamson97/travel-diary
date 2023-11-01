@@ -11,12 +11,15 @@
     <div><%= entry.restaurants %></div>
 
 <br><br><h2>Comments</h2>
+
+  
 <form id="add-comment-form" method="POST"
     action="/entries/<%= entry._id %>/comments">
     <label>Write a Comment:</label>
     <textarea name="content"></textarea>
     <input type="submit" value="Post">
 </form>
+
 
 <% if (entry.comments.length) { %>
     <table>
@@ -34,7 +37,7 @@
           <tr>
             <td class="comment-user"><img alt="avatar" src="<%= c.userAvatar %>" referrerpolicy="no-referrer" ><%= c.userName %></td>
             <td><%= c.content %></td>
-            <!-- <td><%= c.createdAt.toLocaleDateString() %></td> -->
+            <td><%= c.createdAt.toLocaleDateString() %></td>
           </tr>
         <% }); %>
       </tbody>
@@ -42,5 +45,5 @@
   <% } else { %>
     <h5>No Comments Yet</h5>
   <% } %>
-
+  
 <%- include('../partials/footer') %>

@@ -39,3 +39,7 @@ li {
   margin-bottom: 10px; 
 }
 
+.comment-user img {
+  border-radius: 50%;
+  height: 40px;
+}

@@ -10,6 +10,8 @@ router.get('/:id', entriesCtrl.show);
 
 router.post('/', entriesCtrl.create);
 
+router.put('/:id', entriesCtrl.update);
+
 
 
 module.exports = router;
