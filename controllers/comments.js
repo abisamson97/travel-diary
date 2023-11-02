@@ -9,9 +9,9 @@ async function deleteComment(req, res) {
   try {
     const entry = await Entry.findOne({
       'comments._id': req.params.id,
-      'comments.userId': req.user._id,
+      'comments.user': req.user._id,
     });
-
+    console.log(entry);
     if (!entry) {
       return res.redirect(`/entries/${entry._id}`);
     }

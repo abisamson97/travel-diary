@@ -11,7 +11,7 @@
     <div><%= entry.restaurants %></div>
     
 <a href="/entries/<%= entry._id %>/edit">Edit Trip</a>
-
+<
 <br><br><h2>Comments</h2>
 
   
@@ -40,8 +40,10 @@
             <td class="comment-user"><img alt="avatar" src="<%= c.userAvatar %>" referrerpolicy="no-referrer" ><%= c.userName %></td>
             <td><%= c.content %></td>
             <td><%= c.createdAt.toLocaleDateString() %></td>
-            <form method="POST" action="/entries/<%= entry._id %>/comments/<%= c._id %>?_method=DELETE">
+            <td>
+              <form method="POST" action="/comments/<%= c._id %>?_method=DELETE">
               <button type="submit">Delete</button>
+            </td>
             </form>
           </tr>
           

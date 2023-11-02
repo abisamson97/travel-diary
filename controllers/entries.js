@@ -6,8 +6,23 @@ module.exports = {
     create, 
     show,
     edit,
-    update
+    update,
+    delete: deleteEntry
 }
+
+async function deleteEntry(req, res) {
+  try {
+    const deletedEntry = await Book.findOneAndDelete(req.params.id);
+
+    if (!deletedBook) {
+      return res.redirect('/books');
+    }
+
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 async function update(req, res) {
   try {
     const entry = await Entry.findByIdAndUpdate(req.params.id, req.body, { new: true })
@@ -22,17 +37,7 @@ async function update(req, res) {
     res.redirect('/entries');
   }
 }
-// function update(req, res) {
-//   Entry.findOneAndUpdate(
-//     req.params.id,
-//     req.body,
-//     {new: true},
-//     function(err, entry) {
-//       if (err || !entry) return res.redirect('/entry');
-//       res.redirect(`/entries/${entry._id}`);
-//     }
-//   );
-// }
+
 async function show(req, res) {
   const entry = await Entry.findById(req.params.id);
   res.render('entries/show', { title: 'Trip Details', entry})

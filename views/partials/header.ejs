@@ -14,11 +14,11 @@
       <a href="/" <%- title === 'Home' ? 'class="active"' : '' %>>Home</a>
       |
       <% if (user) { %>
-        <a href="/entries" <%- title === 'My Trips' ? 'class="active"' : '' %>>My Trips</a>
-        |
         <a href="/entries/new" <%- title === 'Add an Entry' ? 'class="active"' : '' %>>Add an Entry</a>
         |
-        <a href="/" <%- title === 'My Profile' ? 'class="active"' : '' %>>My Profile</a>
+        <a href="/entries" <%- title === 'My Trips' ? 'class="active"' : '' %>>My Trips</a>
+        |
+        <a href="/profile" <%- title === 'My Profile' ? 'class="active"' : '' %>>My Profile</a>
         |
         <a href="/logout">LOG OUT</a>
     <% } else { %>

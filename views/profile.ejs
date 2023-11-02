@@ -1,0 +1,14 @@
+<%- include('./partials/header') %>
+<main>
+    <section id="profile-info">
+        <h1>My Profile</h1>
+        <div class="profile-img">
+            <img id="avatar-img" src="<%= user.avatar %>" alt="User Avatar" />
+        </div>
+        <div class="user-info">
+            <h2><%= user.name %></h2>
+            <p><strong>Email:</strong> <%= user.email %></p>
+        </div>
+</section>
+</main>
+<%- include('./partials/footer') %>

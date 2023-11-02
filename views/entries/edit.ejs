@@ -3,8 +3,7 @@
 <h2><%= entry.location %></h2>
 
 <h2>Update Trip</h2>
-<form action="/entries/<%= entry._id %>" method="PUT">
-  <!-- <input type="hidden" name="_method" value="PUT"> -->
+<form action="/entries/<%= entry._id %>?_method=PUT" method="POST">
   <label>Location:
     <input type="text" name="location" value="<%= entry.location %>">
   </label><br>

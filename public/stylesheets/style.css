@@ -2,12 +2,7 @@
   background-color: blanchedalmond;
   font-family: 'Playfair Display', serif;
 }
-body {
-  display: grid;
-  grid-template-rows: 0.5fr 0.5fr 3fr 3fr;
-  grid-template-columns: 1fr 1fr 1fr;
 
-}
 
 body > nav {
   display: flex;
@@ -38,24 +33,16 @@ h1 {
 }
 
 #title {
-  display: grid;
-  grid-row: 2 / span 1;
-  grid-column: 1 / span 3;
-  justify-content: center;
-  align-items: flex-start; */
+  text-align: center;
 }
 
 #slogan {
-  display: grid;
-  grid-row: 2 / span 1;
-  grid-column: 1 / span 3;
-  justify-content: center;
-  align-items: flex-start;
-  margin-top: 80px;
+  text-align: center;
 }
 
 h2 {
   text-align: center;
+  font-size: 30px;
 }
 
 /* .login {
@@ -99,8 +86,10 @@ li {
   font-size: 50px;
 }
 
-form {
+#trip-entry form {
   display: grid;
+  grid-template-rows: 0.5fr 0.5fr 3fr 3fr;
+  grid-template-columns: 1fr 1fr 1fr;
   grid-row: 3 / span 1;
   grid-column: 1 / span 3;
   justify-content: center;
@@ -115,13 +104,13 @@ form {
 }
 
 /* Style for labels and input fields */
-label {
+#trip-entry label {
   background-color: #496944;
   display: block; /* Place labels on their own line */
   font-weight: bold;
 }
 
-input[type="text"] {
+#trip-entry input[type="text"] {
   width: 90%; /* Input fields take up the full width of their container */
   padding: 10px;
   margin: 2px 0;
@@ -130,7 +119,7 @@ input[type="text"] {
 }
 
 /* Style for the submit button */
-button[type="submit"] {
+#trip-entry button[type="submit"] {
   width: 100%; /* Button takes up the full width of its container */
   padding: 10px;
   background-color: #8c490a;
@@ -139,4 +128,106 @@ button[type="submit"] {
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
+}
+
+#show-page {
+  display: flex;
+  flex-direction: column;
+  max-width: 600px; /* Adjust the maximum width as needed */
+  margin: 0 auto; /* Center the content horizontally */
+}
+
+/* Style for individual info items (e.g., Lodging, Activities, Restaurants) */
+#show-page > div {
+  margin-bottom: 10px; /* Add spacing between info items */
+  font-size: 18px; /* Adjust the font size as needed */
+}
+
+/* Style for the "Edit Trip" link */
+#show-page a {
+  text-decoration: none; /* Remove the default underline for links */
+  color: #496944; /* Text color for links */
+  font-weight: bold; /* Make the text bold */
+  font-size: 18px; /* Adjust the font size as needed */
+  transition: color 0.3s; /* Add a smooth color transition */
+}
+
+/* Style for the link on hover (change color) */
+#show-page a:hover {
+  color: #ffcc00; /* Change the color on hover */
+}
+
+/* Style for the "Comments" section */
+#show-page h2 {
+  margin-top: 30px; /* Add spacing above the "Comments" heading */
+  font-size: 24px; /* Adjust the font size as needed */
+}
+
+/* Style for the "Write a Comment" label */
+#add-comment-form label {
+  font-size: 18px; /* Adjust the font size as needed */
+}
+
+/* Style for the comment input field */
+#add-comment-form textarea {
+  width: 100%; /* Take up the full width of the form */
+  height: 40px; /* Adjust the height as needed */
+  font-size: 16px; /* Adjust the font size as needed */
+}
+
+/* Style for the comment submit button */
+#add-comment-form input[type="submit"] {
+  background-color: #496944; /* Background color for the button */
+  color: #fff; /* Text color for the button */
+  border: none; /* Remove the button border */
+  padding: 10px 20px; /* Adjust the padding as needed */
+  font-size: 18px; /* Adjust the font size as needed */
+  cursor: pointer;  
+}
+
+/* Style for the comment table (if comments exist) */
+table {
+  width: 100%; /* Take up the full width */
+  border-collapse: collapse; /* Remove border spacing between table cells */
+  margin-top: 20px; /* Add spacing above the table */
+}
+
+/* Style for table headers */
+table th {
+  background-color: #496944; /* Background color for headers */
+  color: #fff; /* Text color for headers */
+  padding: 10px; /* Adjust the padding as needed */
+  text-align: left; /* Align text to the left */
+  font-size: 18px; /* Adjust the font size as needed */
+}
+
+/* Style for table rows */
+table td {
+  padding: 10px; /* Adjust the padding as needed */
+  font-size: 16px; /* Adjust the font size as needed */
+  border-bottom: 1px solid #ccc; /* Add a border at the bottom of each row */
+}
+
+/* Style for user avatars in comments */
+.comment-user img {
+  width: 30px; /* Adjust the avatar width as needed */
+  height: 30px; /* Adjust the avatar height as needed */
+  border-radius: 50%; /* Make the avatars round */
+  margin-right: 10px; /* Add spacing between the avatar and username */
+}
+
+#avatar-img {
+  width: 200px;
+  height: 200px;
+  border: 2px solid #000000;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-img {
+  text-align: center;
+}
+
+.user-info {
+  text-align: center;
 }
