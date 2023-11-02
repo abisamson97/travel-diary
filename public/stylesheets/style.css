@@ -4,17 +4,26 @@
 }
 body {
   display: grid;
-  grid-template-rows: 0.5fr 3fr 3fr;
+  grid-template-rows: 0.5fr 0.5fr 3fr 3fr;
   grid-template-columns: 1fr 1fr 1fr;
 
 }
 
 body > nav {
   display: flex;
-  align-items: center; 
+  justify-content: space-between; /* Align links at both ends of the container */
+  align-items: center;
   height: 50px;
+  background-color: #8c490a; /* Background color for the navigation bar */
+  padding: 0 20px; /* Add some padding on the left and right */
+  border-bottom: 1px solid #ccc; 
 }
-
+nav a {
+  text-decoration: none; /* Text color for links */
+  margin: 0 10px; /* Add spacing between links */
+  transition: color 0.3s;
+   /* Add a smooth color transition */
+}
 
 a {
   color: #0d5d1e;
@@ -82,4 +91,52 @@ li {
   padding-top: 100px;
   font-size: x-large;
 }
+#trip-form {
+  display: grid;
+  grid-row: 2 / span 1;
+  grid-column: 1 / span 3;
+  padding-bottom: 50px;
+  font-size: 50px;
+}
 
+form {
+  display: grid;
+  grid-row: 3 / span 1;
+  grid-column: 1 / span 3;
+  justify-content: center;
+  align-content: flex-start;
+  gap: 10px; /* Spacing between form elements */
+  max-width: 400px; /* Adjust the maximum width as needed */
+  margin: 0 auto; /* Center the form horizontally */
+  padding: 25px;
+  background-color: #496944;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Style for labels and input fields */
+label {
+  background-color: #496944;
+  display: block; /* Place labels on their own line */
+  font-weight: bold;
+}
+
+input[type="text"] {
+  width: 90%; /* Input fields take up the full width of their container */
+  padding: 10px;
+  margin: 2px 0;
+  border: 3px solid #020000;
+  border-radius: 2px;
+}
+
+/* Style for the submit button */
+button[type="submit"] {
+  width: 100%; /* Button takes up the full width of its container */
+  padding: 10px;
+  background-color: #8c490a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
