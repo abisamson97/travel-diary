@@ -182,394 +182,565 @@
   182: db.on('connected', function() {
   183:   console.log(`Connected to MongoDB ${db.name} at ${db.host}:${db.port}`);
   184: });
-185: config/passport.js
-  186: const passport = require('passport');
-  187: const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-  188: const User = require('../models/user');
-  189: 
-  190: passport.use(new GoogleStrategy(
-  191:     {
-  192:       clientID: process.env.GOOGLE_CLIENT_ID,
-  193:       clientSecret: process.env.GOOGLE_SECRET,
-  194:       callbackURL: process.env.GOOGLE_CALLBACK
-  195:     },
-  196:     async function(accessToken, refreshToken, profile, cb) {
-  197:         try {
-  198:             let user = await User.findOne({ googleId: profile.id });
-  199:             if (user) return cb(null, user);
-  200:             user = await User.create({
-  201:               name: profile.displayName,
-  202:               googleId: profile.id,
-  203:               email: profile.emails[0].value,
-  204:               avatar: profile.photos[0].value
-  205:             });
-  206:             return cb(null, user);
-  207:           } catch (err) {
-  208:             return cb(err);
-  209:           }
-  210:     }
-  211:   ));
-  212: 
-  213:   passport.serializeUser(function(user, cb) {
-  214:     cb(null, user._id);
-  215:   });
-  216: 
-  217:   passport.deserializeUser(async function(userId, cb) {
-  218:     cb(null, await User.findById(userId));
-  219:   });
-220: controllers
-221: controllers/comments.js
-  222: const Entry = require('../models/entry');
+185: config/ensureLoggedIn.js
+  186: module.exports = function(req, res, next) {
+  187:     // Pass the req/res to the next middleware/route handler
+  188:     if ( req.isAuthenticated() ) return next();
+  189:     // Redirect to login if the user is not already logged in
+  190:     res.redirect('/auth/google');
+  191:   }
+192: config/passport.js
+  193: const passport = require('passport');
+  194: const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+  195: const User = require('../models/user');
+  196: 
+  197: passport.use(new GoogleStrategy(
+  198:     {
+  199:       clientID: process.env.GOOGLE_CLIENT_ID,
+  200:       clientSecret: process.env.GOOGLE_SECRET,
+  201:       callbackURL: process.env.GOOGLE_CALLBACK
+  202:     },
+  203:     async function(accessToken, refreshToken, profile, cb) {
+  204:         try {
+  205:             let user = await User.findOne({ googleId: profile.id });
+  206:             if (user) return cb(null, user);
+  207:             user = await User.create({
+  208:               name: profile.displayName,
+  209:               googleId: profile.id,
+  210:               email: profile.emails[0].value,
+  211:               avatar: profile.photos[0].value
+  212:             });
+  213:             return cb(null, user);
+  214:           } catch (err) {
+  215:             return cb(err);
+  216:           }
+  217:     }
+  218:   ));
+  219: 
+  220:   passport.serializeUser(function(user, cb) {
+  221:     cb(null, user._id);
+  222:   });
   223: 
-  224: module.exports = {
-  225:     create
-  226: }
-  227: 
-  228: async function create(req, res) {
-  229:     const entry = await Entry.findById(req.params.id);
+  224:   passport.deserializeUser(async function(userId, cb) {
+  225:     cb(null, await User.findById(userId));
+  226:   });
+227: controllers
+228: controllers/comments.js
+  229: const Entry = require('../models/entry');
   230: 
-  231:     req.body.user = req.user._id;
-  232:     req.body.userName = req.user.name;
-  233:     req.body.userAvatar = req.user.avatar;
-  234:     
-  235:     entry.comments.push(req.body);
-  236:     try {
-  237:         await entry.save();
-  238:       } catch (err) {
-  239:         console.log(err);
-  240:       }
-  241:       res.redirect(`/entries/${entry._id}`);
-  242:     }
-  243: 
-  244: 
-245: controllers/entries.js
-  246: const Entry = require('../models/entry');
-  247: 
-  248: module.exports = {
-  249:     new: newEntry,
-  250:     index,
-  251:     create, 
-  252:     show
-  253: }
+  231: module.exports = {
+  232:     create,
+  233:     delete: deleteComment
+  234: };
+  235: 
+  236: async function deleteComment(req, res) {
+  237:   try {
+  238:     const entry = await Entry.findOne({
+  239:       'comments._id': req.params.id,
+  240:       'comments.userId': req.user._id,
+  241:     });
+  242: 
+  243:     if (!entry) {
+  244:       return res.redirect(`/entries/${entry._id}`);
+  245:     }
+  246:     entry.comments.id(req.params.id).remove();
+  247:     await entry.save();
+  248:     res.redirect(`/entries/${entry._id}`);
+  249:   } catch (err) {
+  250:     console.error(err);
+  251:   }
+  252: }
+  253: 
   254: 
   255: async function create(req, res) {
-  256:     try {
-  257:         await Entry.create(req.body);
-  258:         res.redirect('/entries/new');
-  259:       } catch (err) {
-  260:         console.log(err);
-  261:         res.render('entries/new', { errorMsg: err.message });
-  262:       }
-  263:     }
-  264:     
-  265: async function index(req, res) {
-  266:     const entries = await Entry.find({});
-  267:     res.render('entries/index', { title: 'My Trips', entries });
-  268:   }
-  269: 
-  270:   async function show(req, res) {
-  271:     const entry = await Entry.findById(req.params.id);
-  272:     res.render('entries/show', { title: 'Trip Details', entry})
-  273: }
-  274: 
-  275: function newEntry(req, res) {
-  276:     res.render('entries/new', { title: 'Add Trip', errorMsg: ''});
-  277: }
-  278: 
-279: models
-280: models/entry.js
-  281: const mongoose = require('mongoose');
-  282: 
-  283: const Schema = mongoose.Schema;
-  284: 
-  285: const commentSchema = new Schema({
-  286:     content: {type: String, required: true},
-  287:     user: {
-  288:         type: Schema.Types.ObjectId,
-  289:         ref: 'User',
-  290:         required: true
-  291:       },
-  292:       userName: String,
-  293:       userAvatar: String
-  294: }, {
-  295:     timestamps: true
-  296: })
-  297: 
-  298: const entrySchema = new Schema({
-  299:     location: {type: String, required: true},
-  300:     lodging: {type: String},
-  301:     activities: {type: String},
-  302:     restaurants: {type: String},
-  303:     comments: [commentSchema],
-  304: }, {
-  305:     timestamps: true
-  306: });
-  307: 
-  308: 
-  309: 
-  310: module.exports = mongoose.model('Entry', entrySchema);
-311: models/user.js
-  312: const mongoose = require('mongoose');
-  313: const Schema = mongoose.Schema;
-  314: 
-  315: const userSchema = new Schema({
-  316:   name: String,
-  317:   googleId: {
-  318:     type: String,
-  319:     required: true
-  320:   },
-  321:   email: String,
-  322:   avatar: String
-  323: }, {
-  324:   timestamps: true
-  325: });
-  326: 
-  327: module.exports = mongoose.model('User', userSchema);
-328: public
-329: public/images
-330: public/javascripts
-331: public/stylesheets
-332: public/stylesheets/style.css
-  333: body {
-  334:   padding: 50px;
-  335:   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  336: }
-  337: 
-  338: a {
-  339:   color: #00B7FF;
-  340: }
-  341: 
-  342: h1 {
-  343:   text-align: center;
-  344: }
-  345: 
-  346: #slogan {
-  347:   text-align: center;
-  348: }
-  349: 
-  350: h2 {
-  351:   text-align: center;
-  352: }
-  353: 
-  354: /* .login {
-  355:   display: flex;
-  356:   justify-content: center;
-  357:   align-items: center;
-  358:   height: 34px;
-  359: } */
-  360: 
-  361: .login img {
-  362:   height: 20px;
-  363: }
-  364: 
-  365: ul {
-  366:   list-style-type: disc;
-  367:   padding-left: 20px;
-  368: }
-  369: 
-  370: li {
-  371:   margin-bottom: 10px; 
-  372: }
-  373: 
-  374: 
-375: routes
-376: routes/comments.js
-  377: const express = require('express');
-  378: const router = express.Router();
-  379: const commentsCtrl = require('../controllers/comments');
-  380: 
-  381: router.post('/entries/:id/comments', commentsCtrl.create);
-  382: 
-  383: module.exports = router;
-384: routes/entries.js
-  385: const express = require('express');
-  386: const router = express.Router();
-  387: const entriesCtrl = require('../controllers/entries');
-  388: 
-  389: router.get('/', entriesCtrl.index);
-  390: 
-  391: router.get('/new', entriesCtrl.new);
-  392: 
-  393: router.get('/:id', entriesCtrl.show);
-  394: 
-  395: router.post('/', entriesCtrl.create);
-  396: 
-  397: 
+  256:     
+  257:     const entry = await Entry.findById(req.params.id);
+  258:     console.log(req.user._id);
+  259:     req.body.user = await req.user._id;
+  260:     req.body.userName = req.user.name;
+  261:     req.body.userAvatar = req.user.avatar;
+  262:     console.log(req.body);
+  263:     
+  264:     entry.comments.push(req.body);
+  265:     try {
+  266:          await entry.save();
+  267:       } catch (err) {
+  268:         console.log(err);
+  269:       }
+  270:       res.redirect(`/entries/${entry._id}`);
+  271:     }
+  272: 
+  273: 
+274: controllers/entries.js
+  275: const Entry = require('../models/entry');
+  276: 
+  277: module.exports = {
+  278:     new: newEntry,
+  279:     index,
+  280:     create, 
+  281:     show,
+  282:     update,
+  283:     edit
+  284: }
+  285: async function show(req, res) {
+  286:   const entry = await Entry.findById(req.params.id);
+  287:   res.render('entries/show', { title: 'Trip Details', entry})
+  288: }
+  289: function update(req, res) {
+  290:   Entry.findOneAndUpdate(
+  291:     {_id: req.params.id},
+  292:     // update object with updated properties
+  293:     req.body,
+  294:     // options object with new: true to make sure updated doc is returned
+  295:     {new: true},
+  296:     function(err, entry) {
+  297:       if (err || !entry) return res.redirect('/entry');
+  298:       res.redirect(`/entries/${entry._id}`);
+  299:     }
+  300:   );
+  301: }
+  302: 
+  303: async function edit(req, res) {
+  304:   try {
+  305:     const entry = await Entry.findById(req.params.id).exec();
+  306:     
+  307:     if (!entry) {
+  308:       return res.redirect('/entries');
+  309:     }
+  310: 
+  311:     res.render('entries/edit', { title: 'Update Trip', entry });
+  312:   } catch (err) {
+  313:     console.log(err);
+  314:     res.redirect('/entries');
+  315:   }
+  316: }
+  317: 
+  318: // async function update(req, res) {
+  319: //   try {
+  320: //     const entry = await Entry.findOneAndUpdate(
+  321: //       { _id: req.params.id },
+  322: //       req.body,
+  323: //       { new: true }
+  324: //     );
+  325: //     if (!entry) {
+  326: //       return res.redirect('/entries');
+  327: //     }
+  328: 
+  329: //     res.redirect(`/entries/${entry._id}`);
+  330: //   } catch (err) {
+  331: //     console.log(err);
+  332: //     res.redirect('/entries'); 
+  333: //   }
+  334: // }
+  335: 
+  336: async function create(req, res) {
+  337:     try {
+  338:         await Entry.create(req.body);
+  339:         res.redirect('/entries/new');
+  340:       } catch (err) {
+  341:         console.log(err);
+  342:         res.render('entries/new', { errorMsg: err.message });
+  343:       }
+  344:     }
+  345:   // const entryData = {
+  346:   //   location: req.body.location,
+  347:   //   lodging: req.body.lodging,
+  348:   //   activities: req.body.activities,
+  349:   //   restaurants: req.body.restaurants,
+  350:   // };
+  351:   // for (const category in entryData) {
+  352:   //   if (entryData[category]) {
+  353:   //     // Create an entry for this category.
+  354:   //     try {
+  355:   //       await Entry.create({
+  356:   //         [category]: entryData[category],
+  357:   //         comments: [], // Initialize with empty comments.
+  358:   //       });
+  359:   //       res.redirect('/entries/new'); 
+  360:   //     } catch (err) {
+  361:   //       console.log(err);
+  362:   //       res.render('entries/new', { errorMsg: err.message });
+  363:   //     }
+  364:   //   }
+  365:   // }
+  366: 
+  367: //   res.redirect('/entries/new'); // Redirect back to the "New Trip" page.
+  368: // }
+  369:   
+  370:     
+  371: async function index(req, res) {
+  372:     const entries = await Entry.find({});
+  373:     res.render('entries/index', { title: 'My Trips', entries });
+  374:   }
+  375: 
+  376: function newEntry(req, res) {
+  377:     res.render('entries/new', { title: 'Add Trip', errorMsg: ''});
+  378: }
+  379: 
+380: models
+381: models/entry.js
+  382: const mongoose = require('mongoose');
+  383: 
+  384: const Schema = mongoose.Schema;
+  385: 
+  386: const commentSchema = new Schema({
+  387:     content: {type: String, required: true},
+  388:     user: {
+  389:         type: Schema.Types.ObjectId,
+  390:         ref: 'User',
+  391:         required: true
+  392:       },
+  393:       userName: String,
+  394:       userAvatar: String
+  395: }, {
+  396:     timestamps: true
+  397: });
   398: 
-  399: module.exports = router;
-  400: 
-  401: 
-402: routes/index.js
-  403: var express = require('express');
-  404: var router = express.Router();
-  405: const passport = require('passport');
-  406: 
-  407: /* GET home page. */
-  408: router.get('/', function(req, res, next) {
-  409:   res.render('index', { title: 'Travel Diary' });
-  410: });
-  411: 
-  412: router.get('/auth/google', passport.authenticate(
-  413:   'google',
-  414:   {
-  415:     scope: ['profile', 'email'],
-  416:   }
-  417: ));
-  418: 
-  419: router.get('/oauth2callback', passport.authenticate(
-  420:   'google',
-  421:   {
-  422:     successRedirect: '/',
-  423:     failureRedirect: '/'
-  424:   }
-  425: ));
-  426: 
-  427: router.get('/logout', function(req, res){
-  428:   req.logout(function() {
-  429:     res.redirect('/');
-  430:   });
-  431: });
-  432: module.exports = router;
-  433: 
-434: routes/users.js
-  435: var express = require('express');
-  436: var router = express.Router();
-  437: 
-  438: 
-  439: // /* GET users listing. */
-  440: router.get('/', function(req, res, next) {
-  441:   res.send('respond with a resource');
-  442: });
-  443: 
-  444: module.exports = router;
-  445: 
-446: views
-447: views/entries
-448: views/entries/index.ejs
-  449: <%- include('../partials/header') %>
+  399: const entrySchema = new Schema({
+  400:     location: {type: String},
+  401:     lodging: {type: String},
+  402:     activities: {type: String},
+  403:     restaurants: {type: String},
+  404:     comments: [commentSchema],
+  405: }, {
+  406:     timestamps: true
+  407: });
+  408: 
+  409: 
+  410: 
+  411: module.exports = mongoose.model('Entry', entrySchema);
+412: models/user.js
+  413: const mongoose = require('mongoose');
+  414: const Schema = mongoose.Schema;
+  415: 
+  416: const userSchema = new Schema({
+  417:   name: String,
+  418:   googleId: {
+  419:     type: String,
+  420:     required: true
+  421:   },
+  422:   email: String,
+  423:   avatar: String
+  424: }, {
+  425:   timestamps: true
+  426: });
+  427: 
+  428: module.exports = mongoose.model('User', userSchema);
+429: public
+430: public/images
+431: public/javascripts
+432: public/stylesheets
+433: public/stylesheets/style.css
+  434: * {
+  435:   background-color: blanchedalmond;
+  436:   font-family: 'Playfair Display', serif;
+  437: }
+  438: body {
+  439:   display: grid;
+  440:   grid-template-rows: 1fr 3fr 3fr;
+  441:   grid-template-columns: 1fr 1fr 1fr;
+  442: 
+  443: }
+  444: 
+  445: body > nav {
+  446:   display: flex;
+  447:   align-items: center; 
+  448:   height: 50px;
+  449: }
   450: 
-  451: <h1>My Trips</h1>
-  452: <ul> 
-  453:     <p>Locations:</p>
-  454:     <% entries.forEach(function(e) { %>
-  455:       <li> 
-  456:         <a href="/entries/<%= e._id %>"><%= e.location %></a>
-  457:       </li>
-  458:     <% }); %>
-  459: </ul> 
-  460: 
-  461: <%- include('../partials/footer') %>
-462: views/entries/new.ejs
-  463: <%- include('../partials/header') %>
-  464: 
-  465: <h2>Enter a New Trip</h2>
-  466: <form action="/entries" method="POST">
-  467:   <label>Location:
-  468:     <input type="text" name="location">
-  469:   </label><br>
-  470:   <label>Lodging:
-  471:     <input type="text" name="lodging">
-  472:   </label><br>
-  473:   <label>Activities:
-  474:     <input type="text" name="activities">
-  475:   </label><br>
-  476:   <label>Restaurants:
-  477:     <input type="text" name="restaurants" >
-  478:   </label><br>
-  479: 
-  480:   <button type="submit">Add Trip</button>
-  481: </form>
-  482: <p><%= errorMsg %></p>
-  483: 
-  484: <%- include('../partials/footer') %>
-485: views/entries/show.ejs
-  486: <%- include('../partials/header') %>
+  451: 
+  452: a {
+  453:   color: #0d5d1e;
+  454: }
+  455: 
+  456: h1 {
+  457:   text-align: center;
+  458: }
+  459: 
+  460: #title {
+  461:   display: grid;
+  462:   grid-row: 2 / span 1;
+  463:   grid-column: 1 / span 3;
+  464:   justify-content: center;
+  465:   align-items: flex-start; */
+  466: }
+  467: 
+  468: #slogan {
+  469:   display: grid;
+  470:   grid-row: 2 / span 1;
+  471:   grid-column: 1 / span 3;
+  472:   justify-content: center;
+  473:   align-items: flex-start;
+  474:   margin-top: 80px;
+  475: }
+  476: 
+  477: h2 {
+  478:   text-align: center;
+  479: }
+  480: 
+  481: /* .login {
+  482:   display: flex;
+  483:   justify-content: center;
+  484:   align-items: center;
+  485:   height: 34px;
+  486: } */
   487: 
-  488: <h2><%= entry.location %></h2>
-  489: 
-  490: <section id="show-page">
-  491:     <div>Lodging: </div>
-  492:     <div><%= entry.lodging %></div>
-  493:     <div>Activities: </div>
-  494:     <div><%= entry.activities %></div>
-  495:     <div>Restaurants: </div>
-  496:     <div><%= entry.restaurants %></div>
-  497: 
-  498: <br><br><h2>Comments</h2>
-  499: <form id="add-comment-form" method="POST"
-  500:     action="/entries/<%= entry._id %>/comments">
-  501:     <label>Write a Comment:</label>
-  502:     <textarea name="content"></textarea>
-  503:     <input type="submit" value="Post">
-  504: </form>
+  488: .login img {
+  489:   height: 20px;
+  490: }
+  491: 
+  492: ul {
+  493:   list-style-type: disc;
+  494:   padding-left: 20px;
+  495: }
+  496: 
+  497: li {
+  498:   margin-bottom: 10px; 
+  499: }
+  500: 
+  501: .comment-user img {
+  502:   border-radius: 50%;
+  503:   height: 40px;
+  504: }
   505: 
-  506: <% if (entry.comments.length) { %>
-  507:     <table>
-  508:       <thead>
-  509:         <tr>
-  510:         <th>User</th>
-  511:           <th>Comment</th>
-  512:           <th>Date</th>
-  513:         </tr>
-  514:       </thead>
-  515:       <tbody>
-  516:         <% let total = 0 %>
-  517:         <% entry.comments.forEach(function(c) { %>
-  518:             <% total += c.comment %>
-  519:           <tr>
-  520:             <td class="comment-user"><img alt="avatar" src="<%= c.userAvatar %>" referrerpolicy="no-referrer" ><%= c.userName %></td>
-  521:             <td><%= c.content %></td>
-  522:             <td><%= c.createdAt.toLocaleDateString() %></td>
-  523:           </tr>
-  524:         <% }); %>
-  525:       </tbody>
-  526:     </table>
-  527:   <% } else { %>
-  528:     <h5>No Comments Yet</h5>
-  529:   <% } %>
-  530: 
-  531: <%- include('../partials/footer') %>
-532: views/error.ejs
-  533: <h1><%= message %></h1>
-  534: <h2><%= error.status %></h2>
-  535: <pre><%= error.stack %></pre>
+  506: 
+507: routes
+508: routes/comments.js
+  509: const express = require('express');
+  510: const router = express.Router();
+  511: const commentsCtrl = require('../controllers/comments');
+  512: const ensureLoggedIn = require('../config/ensureLoggedIn');
+  513: 
+  514: router.post('/entries/:id/comments', ensureLoggedIn, commentsCtrl.create);
+  515: 
+  516: router.delete('/entries/:id/comments/:id', commentsCtrl.delete);
+  517: 
+  518: module.exports = router;
+519: routes/entries.js
+  520: const express = require('express');
+  521: const router = express.Router();
+  522: const entriesCtrl = require('../controllers/entries');
+  523: 
+  524: router.get('/', entriesCtrl.index);
+  525: 
+  526: router.get('/new', entriesCtrl.new);
+  527: 
+  528: router.get('/:id', entriesCtrl.show);
+  529: 
+  530: router.post('/', entriesCtrl.create);
+  531: 
+  532: router.get('/:id/edit', entriesCtrl.edit);
+  533: 
+  534: router.put('/:id', entriesCtrl.update);
+  535: 
   536: 
-537: views/index.ejs
-  538: <%- include('./partials/header') %>
+  537: 
+  538: module.exports = router;
   539: 
-  540:     <h1><%= title %></h1>
-  541:     <p id="slogan">Discover, Document, Display - One Adventure at a Time</p>
-  542: 
-  543: <%- include('./partials/footer') %>
-  544:  
+  540: 
+541: routes/index.js
+  542: var express = require('express');
+  543: var router = express.Router();
+  544: const passport = require('passport');
   545: 
-546: views/partials
-547: views/partials/footer.ejs
-  548: </body>
-  549: </html>
-550: views/partials/header.ejs
-  551: <!DOCTYPE html>
-  552: <html>
-  553:   <head>
-  554:     <meta charset="UTF-8">
-  555:     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  556:     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  557:     <title><%= title %></title>
-  558:     <link rel='stylesheet' href='/stylesheets/style.css' />
-  559:   </head>
-  560:   <body>
-  561:     <nav>
-  562:       <a href="/" <%- title === 'Home' ? 'class="active"' : '' %>>Home</a>
-  563:       |
-  564:       <% if (user) { %>
-  565:         <a href="/entries" <%- title === 'My Trips' ? 'class="active"' : '' %>>My Trips</a>
-  566:         |
-  567:         <a href="/entries/new" <%- title === 'Add an Entry' ? 'class="active"' : '' %>>Add an Entry</a>
-  568:         |
-  569:         <a href="/" <%- title === 'My Profile' ? 'class="active"' : '' %>>My Profile</a>
-  570:         |
-  571:         <a href="/logout">LOG OUT</a>
-  572:     <% } else { %>
-  573:         <a href="/auth/google" class="login">LOG IN&nbsp;<img src="https://i.imgur.com/FHjYyi0.png"></a>
-  574:     <% } %>
-  575:     </nav>
+  546: /* GET home page. */
+  547: router.get('/', function(req, res, next) {
+  548:   res.render('index', { title: 'Travel Diary' });
+  549: });
+  550: 
+  551: router.get('/auth/google', passport.authenticate(
+  552:   'google',
+  553:   {
+  554:     scope: ['profile', 'email'],
+  555:   }
+  556: ));
+  557: 
+  558: router.get('/oauth2callback', passport.authenticate(
+  559:   'google',
+  560:   {
+  561:     successRedirect: '/',
+  562:     failureRedirect: '/'
+  563:   }
+  564: ));
+  565: 
+  566: router.get('/logout', function(req, res){
+  567:   req.logout(function() {
+  568:     res.redirect('/');
+  569:   });
+  570: });
+  571: module.exports = router;
+  572: 
+573: routes/users.js
+  574: var express = require('express');
+  575: var router = express.Router();
+  576: 
+  577: 
+  578: // /* GET users listing. */
+  579: router.get('/', function(req, res, next) {
+  580:   res.send('respond with a resource');
+  581: });
+  582: 
+  583: module.exports = router;
+  584: 
+585: views
+586: views/entries
+587: views/entries/edit.ejs
+  588: <%- include('../partials/header') %>
+  589: 
+  590: <h2><%= entry.location %></h2>
+  591: 
+  592: <h2>Update Trip</h2>
+  593: <form action="/entries/<%= entry._id %>" method="POST">
+  594:   <label>Lodging:
+  595:     <input type="text" name="lodging">
+  596:   </label><br>
+  597:   <label>Activities:
+  598:     <input type="text" name="activities">
+  599:   </label><br>
+  600:   <label>Restaurants:
+  601:     <input type="text" name="restaurants" >
+  602:   </label><br>
+  603: 
+  604:   <button type="submit">Update</button>
+  605: </form>
+  606: 
+  607: <%- include('../partials/footer') %>
+608: views/entries/index.ejs
+  609: <%- include('../partials/header') %>
+  610: 
+  611: <h1>My Trips</h1>
+  612: <ul> 
+  613:     <p>Locations:</p>
+  614:     <% entries.forEach(function(e) { %>
+  615:       <li> 
+  616:         <a href="/entries/<%= e._id %>"><%= e.location %></a>
+  617:       </li>
+  618:     <% }); %>
+  619: </ul> 
+  620: 
+  621: <%- include('../partials/footer') %>
+622: views/entries/new.ejs
+  623: <%- include('../partials/header') %>
+  624: 
+  625: <h2>Enter a New Trip</h2>
+  626: <form action="/entries" method="POST">
+  627:   <label>Location:
+  628:     <input type="text" name="location">
+  629:   </label><br>
+  630:   <label>Lodging:
+  631:     <input type="text" name="lodging">
+  632:   </label><br>
+  633:   <label>Activities:
+  634:     <input type="text" name="activities">
+  635:   </label><br>
+  636:   <label>Restaurants:
+  637:     <input type="text" name="restaurants" >
+  638:   </label><br>
+  639: 
+  640:   <button type="submit">Add Trip</button>
+  641: </form>
+  642: <p><%= errorMsg %></p>
+  643: 
+  644: <%- include('../partials/footer') %>
+645: views/entries/show.ejs
+  646: <%- include('../partials/header') %>
+  647: 
+  648: <h2><%= entry.location %></h2>
+  649: 
+  650: <section id="show-page">
+  651:     <div>Lodging: </div>
+  652:     <div><%= entry.lodging %></div>
+  653:     <div>Activities: </div>
+  654:     <div><%= entry.activities %></div>
+  655:     <div>Restaurants: </div>
+  656:     <div><%= entry.restaurants %></div>
+  657:     
+  658: <a href="/entries/<%= entry._id %>/edit">Edit Trip</a>
+  659: 
+  660: <br><br><h2>Comments</h2>
+  661: 
+  662:   
+  663: <form id="add-comment-form" method="POST"
+  664:     action="/entries/<%= entry._id %>/comments">
+  665:     <label>Write a Comment:</label>
+  666:     <textarea name="content"></textarea>
+  667:     <input type="submit" value="Post">
+  668: </form>
+  669: 
+  670: 
+  671: <% if (entry.comments.length) { %>
+  672:     <table>
+  673:       <thead>
+  674:         <tr>
+  675:         <th>User</th>
+  676:           <th>Comment</th>
+  677:           <th>Date</th>
+  678:         </tr>
+  679:       </thead>
+  680:       <tbody>
+  681: 
+  682:         <% entry.comments.forEach(function(c) { %>
+  683: 
+  684:           <tr>
+  685:             <td class="comment-user"><img alt="avatar" src="<%= c.userAvatar %>" referrerpolicy="no-referrer" ><%= c.userName %></td>
+  686:             <td><%= c.content %></td>
+  687:             <td><%= c.createdAt.toLocaleDateString() %></td>
+  688:             <form method="POST" action="/entries/<%= entry._id %>/comments/<%= c._id %>?_method=DELETE">
+  689:               <button type="submit">Delete</button>
+  690:             </form>
+  691:           </tr>
+  692:           
+  693:         <% }); %>
+  694:       </tbody>
+  695:     </table>
+  696:   <% } else { %>
+  697:     <h5>No Comments Yet</h5>
+  698:   <% } %>
+  699: 
+  700: <%- include('../partials/footer') %>
+701: views/error.ejs
+  702: <h1><%= message %></h1>
+  703: <h2><%= error.status %></h2>
+  704: <pre><%= error.stack %></pre>
+  705: 
+706: views/index.ejs
+  707: <%- include('./partials/header') %>
+  708: 
+  709:     <h1 id="title"><%= title %></h1>
+  710:     <p id="slogan">Discover, Document, Display - One Adventure at a Time</p>
+  711:    
+  712: <%- include('./partials/footer') %>
+  713:  
+  714: 
+715: views/partials
+716: views/partials/footer.ejs
+  717: </body>
+  718: </html>
+719: views/partials/header.ejs
+  720: <!DOCTYPE html>
+  721: <html>
+  722:   <head>
+  723:     <meta charset="UTF-8">
+  724:     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  725:     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  726:     <title><%= title %></title>
+  727:     <link rel='stylesheet' href='/stylesheets/style.css' />
+  728:     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+  729:     
+  730:   </head>
+  731:   <body>
+  732:     <nav>
+  733:       <a href="/" <%- title === 'Home' ? 'class="active"' : '' %>>Home</a>
+  734:       |
+  735:       <% if (user) { %>
+  736:         <a href="/entries" <%- title === 'My Trips' ? 'class="active"' : '' %>>My Trips</a>
+  737:         |
+  738:         <a href="/entries/new" <%- title === 'Add an Entry' ? 'class="active"' : '' %>>Add an Entry</a>
+  739:         |
+  740:         <a href="/" <%- title === 'My Profile' ? 'class="active"' : '' %>>My Profile</a>
+  741:         |
+  742:         <a href="/logout">LOG OUT</a>
+  743:     <% } else { %>
+  744:         <a href="/auth/google" class="login">LOG IN&nbsp;<img src="https://i.imgur.com/FHjYyi0.png"></a>
+  745:     <% } %>
+  746:     </nav>

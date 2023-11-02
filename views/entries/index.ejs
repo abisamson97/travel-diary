@@ -1,8 +1,7 @@
 <%- include('../partials/header') %>
 
 <h1>My Trips</h1>
-<ul> 
-    <p>Locations:</p>
+<ul id="my-trips"> 
     <% entries.forEach(function(e) { %>
       <li> 
         <a href="/entries/<%= e._id %>"><%= e.location %></a>

@@ -40,12 +40,16 @@
             <td class="comment-user"><img alt="avatar" src="<%= c.userAvatar %>" referrerpolicy="no-referrer" ><%= c.userName %></td>
             <td><%= c.content %></td>
             <td><%= c.createdAt.toLocaleDateString() %></td>
+            <form method="POST" action="/entries/<%= entry._id %>/comments/<%= c._id %>?_method=DELETE">
+              <button type="submit">Delete</button>
+            </form>
           </tr>
+          
         <% }); %>
       </tbody>
     </table>
   <% } else { %>
     <h5>No Comments Yet</h5>
   <% } %>
-  
+
 <%- include('../partials/footer') %>

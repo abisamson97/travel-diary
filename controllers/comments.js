@@ -1,8 +1,28 @@
 const Entry = require('../models/entry');
 
 module.exports = {
-    create
+    create,
+    delete: deleteComment
+};
+
+async function deleteComment(req, res) {
+  try {
+    const entry = await Entry.findOne({
+      'comments._id': req.params.id,
+      'comments.userId': req.user._id,
+    });
+
+    if (!entry) {
+      return res.redirect(`/entries/${entry._id}`);
+    }
+    entry.comments.remove(req.params.id);
+    await entry.save();
+    res.redirect(`/entries/${entry._id}`);
+  } catch (err) {
+    console.error(err);
+  }
 }
+
 
 async function create(req, res) {
     

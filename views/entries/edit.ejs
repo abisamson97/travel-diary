@@ -3,15 +3,19 @@
 <h2><%= entry.location %></h2>
 
 <h2>Update Trip</h2>
-<form action="/entries/<%= entry._id %>" method="POST">
+<form action="/entries/<%= entry._id %>" method="PUT">
+  <!-- <input type="hidden" name="_method" value="PUT"> -->
+  <label>Location:
+    <input type="text" name="location" value="<%= entry.location %>">
+  </label><br>
   <label>Lodging:
-    <input type="text" name="lodging">
+    <input type="text" name="lodging" value="<%= entry.lodging %>">
   </label><br>
   <label>Activities:
-    <input type="text" name="activities">
+    <input type="text" name="activities" value="<%= entry.activities %>">
   </label><br>
   <label>Restaurants:
-    <input type="text" name="restaurants" >
+    <input type="text" name="restaurants" value="<%= entry.restaurants %>">
   </label><br>
 
   <button type="submit">Update</button>
