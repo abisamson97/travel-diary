@@ -6,22 +6,9 @@ module.exports = {
     create, 
     show,
     edit,
-    update,
-    delete: deleteEntry
+    update
 }
 
-async function deleteEntry(req, res) {
-  try {
-    const deletedEntry = await Entry.findOneAndDelete(req.params.id);
-
-    if (!deletedEntry) {
-      return res.redirect('/entries');
-    }
-
-  } catch (err) {
-    console.error(err);
-  }
-}
 
 async function update(req, res) {
   try {

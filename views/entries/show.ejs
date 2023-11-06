@@ -23,11 +23,9 @@
       </tr>
     </table> 
 
-  
-<form method="POST" action="/entries/<%= entry._id %>?_method=DELETE">
-  <button type="submit">Delete Trip</button>
+
 <br><br><h2>Comments</h2>
-</form>
+
   
 <form id="add-comment-form" method="POST" action="/entries/<%= entry._id %>/comments">
     <label>Write a Comment:</label>

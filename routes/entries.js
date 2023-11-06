@@ -14,7 +14,6 @@ router.get('/:id/edit', entriesCtrl.edit);
 
 router.put('/:id', entriesCtrl.update);
 
-router.delete('/:id', entriesCtrl.delete)
 
 module.exports = router;
 
