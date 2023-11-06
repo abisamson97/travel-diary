@@ -4,14 +4,6 @@
 <div id="edit-btn">
 <a id="edit" href="/entries/<%= entry._id %>/edit">Edit Trip</a>
 </div>
-
-<!-- <section id="show-page">
-    <div>Lodging: </div>
-    <div><%= entry.lodging %></div>
-    <div>Activities: </div>
-    <div><%= entry.activities %></div>
-    <div>Restaurants: </div>
-    <div><%= entry.restaurants %></div> -->
     <table id="trip-details">
       <tr>
         <th>Category</th>
@@ -35,12 +27,12 @@
 <form method="POST" action="/entries/<%= entry._id %>?_method=DELETE">
   <button type="submit">Delete Trip</button>
 <br><br><h2>Comments</h2>
-
+</form>
   
 <form id="add-comment-form" method="POST" action="/entries/<%= entry._id %>/comments">
     <label>Write a Comment:</label>
     <textarea name="content"></textarea>
-    <input type="submit" value="Post">
+    <button type="submit">Post</button>
 </form>
 
 
