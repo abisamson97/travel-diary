@@ -5,9 +5,9 @@ Travel Diary is an app to document and save trip details for the users' memories
 
 # App Pages
 
-<img src="./travel-images/Home-Page.png">
-<img src="../travel-images/Trip-Entry.png">
-<img src=".../travel-images/Trip-Details.png">
+<img src="./app-images/Home-Page.png">
+<img src="../app-images/Trip-Entry.png">
+<img src="./app-images/Trip-Details.png">
 
 # Technologies Used
 
