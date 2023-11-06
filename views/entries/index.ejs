@@ -4,7 +4,7 @@
 <ul id="my-trips"> 
     <% entries.forEach(function(e) { %>
       <li> 
-        <a href="/entries/<%= e._id %>"><%= e.location %></a>
+        <a id="locations" href="/entries/<%= e._id %>"><%= e.location %></a>
       </li>
     <% }); %>
 </ul> 

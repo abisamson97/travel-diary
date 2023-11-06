@@ -1,22 +1,43 @@
 <%- include('../partials/header') %>
 
 <h2><%= entry.location %></h2>
+<div id="edit-btn">
+<a id="edit" href="/entries/<%= entry._id %>/edit">Edit Trip</a>
+</div>
 
-<section id="show-page">
+<!-- <section id="show-page">
     <div>Lodging: </div>
     <div><%= entry.lodging %></div>
     <div>Activities: </div>
     <div><%= entry.activities %></div>
     <div>Restaurants: </div>
-    <div><%= entry.restaurants %></div>
-    
-<a href="/entries/<%= entry._id %>/edit">Edit Trip</a>
-<
+    <div><%= entry.restaurants %></div> -->
+    <table id="trip-details">
+      <tr>
+        <th>Category</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td id="category">Lodging:</td>
+        <td><%= entry.lodging %></td>
+      </tr>
+      <tr>
+        <td id="category">Activities:</td>
+        <td><%= entry.activities %></td>
+      </tr>
+      <tr>
+        <td id="category">Restaurants:</td>
+        <td><%= entry.restaurants %></td>
+      </tr>
+    </table> 
+
+  
+<form method="POST" action="/entries/<%= entry._id %>?_method=DELETE">
+  <button type="submit">Delete Trip</button>
 <br><br><h2>Comments</h2>
 
   
-<form id="add-comment-form" method="POST"
-    action="/entries/<%= entry._id %>/comments">
+<form id="add-comment-form" method="POST" action="/entries/<%= entry._id %>/comments">
     <label>Write a Comment:</label>
     <textarea name="content"></textarea>
     <input type="submit" value="Post">

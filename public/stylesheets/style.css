@@ -6,22 +6,21 @@
 
 body > nav {
   display: flex;
-  justify-content: space-between; /* Align links at both ends of the container */
+  justify-content: space-between; 
   align-items: center;
   height: 50px;
-  background-color: #8c490a; /* Background color for the navigation bar */
-  padding: 0 20px; /* Add some padding on the left and right */
+  background-color: #8c490a; 
+  padding: 0 20px; 
   border-bottom: 1px solid #ccc; 
 }
 nav a {
-  text-decoration: none; /* Text color for links */
-  margin: 0 10px; /* Add spacing between links */
-  transition: color 0.3s;
-   /* Add a smooth color transition */
+  text-decoration: none; 
+  margin: 0 10px; 
+  background-color: #8c490a
 }
 
 a {
-  color: #0d5d1e;
+  color: #f9f9f9;
 }
 
 h1 {
@@ -39,18 +38,15 @@ h1 {
 #slogan {
   text-align: center;
 }
+#log-in {
+  text-align: center;
+}
 
 h2 {
   text-align: center;
   font-size: 30px;
 }
 
-/* .login {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 34px;
-} */
 
 .login img {
   height: 20px;
@@ -63,6 +59,10 @@ ul {
 
 li {
   margin-bottom: 10px; 
+}
+
+#locations {
+  color:#496944
 }
 
 .comment-user img {
@@ -86,134 +86,122 @@ li {
   font-size: 50px;
 }
 
-#trip-entry form {
-  display: grid;
-  grid-template-rows: 0.5fr 0.5fr 3fr 3fr;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-row: 3 / span 1;
-  grid-column: 1 / span 3;
-  justify-content: center;
-  align-content: flex-start;
-  gap: 10px; /* Spacing between form elements */
-  max-width: 400px; /* Adjust the maximum width as needed */
-  margin: 0 auto; /* Center the form horizontally */
-  padding: 25px;
-  background-color: #496944;
+#trip-entry {
+  display: flex;
+  flex-direction: column;
+  max-width: 400px; 
+  margin: 0 auto; 
+  padding: 20px; 
   border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #496944;
+}
+
+#trip-entry label {
+  margin-bottom: 10px; 
+  background-color: #496944;
+  color: #f9f9f9;
+}
+
+#trip-entry input {
+  width: 90%; 
+  padding: 10px; 
+  margin-bottom: 10px; 
+  border: 1px solid #000000;
   border-radius: 5px;
 }
 
-/* Style for labels and input fields */
-#trip-entry label {
-  background-color: #496944;
-  display: block; /* Place labels on their own line */
-  font-weight: bold;
-}
-
-#trip-entry input[type="text"] {
-  width: 90%; /* Input fields take up the full width of their container */
-  padding: 10px;
-  margin: 2px 0;
-  border: 3px solid #020000;
-  border-radius: 2px;
-}
-
-/* Style for the submit button */
-#trip-entry button[type="submit"] {
-  width: 100%; /* Button takes up the full width of its container */
-  padding: 10px;
+#trip-entry button {
   background-color: #8c490a;
-  color: white;
+  color: white; 
   border: none;
-  border-radius: 4px;
+  padding: 10px 20px; 
+  border-radius: 5px;
   cursor: pointer;
-  font-weight: bold;
 }
+
 
 #show-page {
   display: flex;
   flex-direction: column;
-  max-width: 600px; /* Adjust the maximum width as needed */
-  margin: 0 auto; /* Center the content horizontally */
+  max-width: 600px; 
+  margin: 0 auto;
 }
 
-/* Style for individual info items (e.g., Lodging, Activities, Restaurants) */
 #show-page > div {
-  margin-bottom: 10px; /* Add spacing between info items */
-  font-size: 18px; /* Adjust the font size as needed */
+  margin-bottom: 10px; 
+  font-size: 18px; 
 }
 
-/* Style for the "Edit Trip" link */
+
 #show-page a {
-  text-decoration: none; /* Remove the default underline for links */
-  color: #496944; /* Text color for links */
-  font-weight: bold; /* Make the text bold */
-  font-size: 18px; /* Adjust the font size as needed */
-  transition: color 0.3s; /* Add a smooth color transition */
+  text-decoration: none; 
+  color: #496944; 
+  font-weight: bold; 
+  font-size: 18px; 
+  transition: color 0.3s; 
 }
 
-/* Style for the link on hover (change color) */
+
 #show-page a:hover {
-  color: #ffcc00; /* Change the color on hover */
+  color: #ffcc00; 
 }
 
-/* Style for the "Comments" section */
+
 #show-page h2 {
-  margin-top: 30px; /* Add spacing above the "Comments" heading */
-  font-size: 24px; /* Adjust the font size as needed */
+  margin-top: 30px; 
+  font-size: 24px;
 }
 
-/* Style for the "Write a Comment" label */
+
 #add-comment-form label {
-  font-size: 18px; /* Adjust the font size as needed */
+  font-size: 18px; 
 }
 
-/* Style for the comment input field */
+
 #add-comment-form textarea {
-  width: 100%; /* Take up the full width of the form */
-  height: 40px; /* Adjust the height as needed */
-  font-size: 16px; /* Adjust the font size as needed */
+  width: 100%; 
+  height: 40px; 
+  font-size: 16px; 
 }
 
-/* Style for the comment submit button */
 #add-comment-form input[type="submit"] {
-  background-color: #496944; /* Background color for the button */
-  color: #fff; /* Text color for the button */
-  border: none; /* Remove the button border */
-  padding: 10px 20px; /* Adjust the padding as needed */
-  font-size: 18px; /* Adjust the font size as needed */
+  background-color: #496944; 
+  color: #fff; 
+  border: none; 
+  padding: 10px 20px; 
+  font-size: 18px; 
   cursor: pointer;  
 }
 
-/* Style for the comment table (if comments exist) */
+
 table {
-  width: 100%; /* Take up the full width */
-  border-collapse: collapse; /* Remove border spacing between table cells */
-  margin-top: 20px; /* Add spacing above the table */
+  width: 100%; 
+  border-collapse: collapse; 
+  margin-top: 20px; 
 }
 
-/* Style for table headers */
 table th {
-  background-color: #496944; /* Background color for headers */
-  color: #fff; /* Text color for headers */
-  padding: 10px; /* Adjust the padding as needed */
-  text-align: left; /* Align text to the left */
-  font-size: 18px; /* Adjust the font size as needed */
+  background-color: #496944; 
+  color: #fff; 
+  padding: 10px; 
+  text-align: left; 
+  font-size: 18px; 
 }
 
-/* Style for table rows */
+
 table td {
-  padding: 10px; /* Adjust the padding as needed */
-  font-size: 16px; /* Adjust the font size as needed */
-  border-bottom: 1px solid #ccc; /* Add a border at the bottom of each row */
+  padding: 10px; 
+  font-size: 16px; 
+  border-bottom: 1px solid #ccc; 
 }
 
-/* Style for user avatars in comments */
+
 .comment-user img {
-  width: 30px; /* Adjust the avatar width as needed */
-  height: 30px; /* Adjust the avatar height as needed */
-  border-radius: 50%; /* Make the avatars round */
-  margin-right: 10px; /* Add spacing between the avatar and username */
+  width: 30px; 
+  height: 30px; 
+  border-radius: 50%; 
+  margin-right: 10px; 
 }
 
 #avatar-img {
@@ -230,4 +218,53 @@ table td {
 
 .user-info {
   text-align: center;
+}
+
+#travel-planning {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#travel-planning img {
+  width: 500px; 
+  height: auto; 
+  border: 3px solid black;
+}
+
+#edit-btn {
+  text-align: center;
+}
+
+#edit {
+  color: #496944;
+}
+
+#trip-details {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+}
+
+#trip-details th {
+  background-color: #f2f2f2;
+}
+
+#trip-details th, #trip-details td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #000000;
+}
+
+#trip-details tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+#trip-details th {
+  background-color:#496944;
+  color: white;
+}
+
+#category {
+  font-weight: 900;
 }

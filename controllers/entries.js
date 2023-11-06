@@ -12,10 +12,10 @@ module.exports = {
 
 async function deleteEntry(req, res) {
   try {
-    const deletedEntry = await Book.findOneAndDelete(req.params.id);
+    const deletedEntry = await Entry.findOneAndDelete(req.params.id);
 
-    if (!deletedBook) {
-      return res.redirect('/books');
+    if (!deletedEntry) {
+      return res.redirect('/entries');
     }
 
   } catch (err) {
@@ -69,32 +69,7 @@ async function create(req, res) {
         res.render('entries/new', { errorMsg: err.message });
       }
     }
-  // const entryData = {
-  //   location: req.body.location,
-  //   lodging: req.body.lodging,
-  //   activities: req.body.activities,
-  //   restaurants: req.body.restaurants,
-  // };
-  // for (const category in entryData) {
-  //   if (entryData[category]) {
-  //     // Create an entry for this category.
-  //     try {
-  //       await Entry.create({
-  //         [category]: entryData[category],
-  //         comments: [], // Initialize with empty comments.
-  //       });
-  //       res.redirect('/entries/new'); 
-  //     } catch (err) {
-  //       console.log(err);
-  //       res.render('entries/new', { errorMsg: err.message });
-  //     }
-  //   }
-  // }
-
-//   res.redirect('/entries/new'); // Redirect back to the "New Trip" page.
-// }
   
-    
 async function index(req, res) {
     const entries = await Entry.find({});
     res.render('entries/index', { title: 'My Trips', entries });
