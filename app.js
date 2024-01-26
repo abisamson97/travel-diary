@@ -49,8 +49,8 @@ app.use(methodOverride('_method'));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/entries', entriesRouter);
-app.use('/', commentsRouter);
-app.use('/', profileRouter);
+app.use('/comments', commentsRouter);
+app.use('/profile', profileRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -66,6 +66,11 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+const port = process.env.PORT || 3000; 
+app.listen(port, () => {
+  console.log(`✅ PORT: ${port} 🌟`);
 });
 
 module.exports = app;
