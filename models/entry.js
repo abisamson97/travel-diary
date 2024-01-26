@@ -16,6 +16,11 @@ const commentSchema = new Schema({
 });
 
 const entrySchema = new Schema({
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User', 
+        required: true,
+      },
     location: {type: String},
     lodging: {type: String},
     activities: {type: String},

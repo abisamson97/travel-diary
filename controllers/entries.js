@@ -6,13 +6,36 @@ module.exports = {
     create, 
     show,
     edit,
-    update
+    update,
+    delete: deleteEntry,
 }
+
+async function deleteEntry(req, res) {
+  try {
+    const result = await Entry.deleteOne({
+      _id: req.params.id,
+      user: req.user._id,
+    });
+
+    if (result.deletedCount === 0) {
+      return res.redirect('/entries');
+    }
+
+    res.redirect('/entries');
+  } catch (err) {
+    console.error(err);
+    res.redirect('/entries');
+  }
+}
+
 
 
 async function update(req, res) {
   try {
-    const entry = await Entry.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    const entry = await Entry.findByIdAndUpdate(
+      { _id: req.params.id, user: req.user._id }, 
+      req.body, 
+      { new: true })
 
     if (!entry) {
       return res.redirect('/entries');
@@ -32,7 +55,7 @@ async function show(req, res) {
 
 async function edit(req, res) {
   try {
-    const entry = await Entry.findById(req.params.id).exec();
+    const entry = await Entry.findById({ _id: req.params.id, user: req.user._id }).exec();
     
     if (!entry) {
       return res.redirect('/entries');
@@ -49,8 +72,18 @@ async function edit(req, res) {
 
 async function create(req, res) {
     try {
-        await Entry.create(req.body);
-        res.redirect('/entries/new');
+        const entryData = {
+          location: req.body.location,
+          lodging: req.body.lodging,
+          activities: req.body.activities,
+          restaurants: req.body.restaurants,
+          user: req.user._id,
+        };
+
+        const entry = await Entry.create(entryData);
+        req.session.flash = { title: 'Add Trip', errorMsg: '' };
+
+        res.redirect(`/entries/${entry._id}`);
       } catch (err) {
         console.log(err);
         res.render('entries/new', { errorMsg: err.message });

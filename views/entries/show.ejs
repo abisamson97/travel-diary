@@ -22,6 +22,9 @@
         <td><%= entry.restaurants %></td>
       </tr>
     </table> 
+    
+    <form method="POST" action="/entries/<%= entry._id %>?_method=DELETE">
+      <button type="submit">Delete Trip</button>
 
 
 <br><br><h2>Comments</h2>
